@@ -11,6 +11,8 @@ import axios from 'axios';
 import Home from './Home'
 import All_Pokemon from './All_Pokemon'
 import About from './About'
+import Pokemon from './Pokemon'
+import PokeBall from './PokeBall'
 import Pokeball from './Pokeball.jpg'
 import MCZ from './006.5 Mega Charizard Z (X&Y).jpg'
 import { Routes, Route, Link } from "react-router-dom";
@@ -158,6 +160,8 @@ class App extends Component {
 
               <Nav className="me-auto">
                 <Nav.Link as={Link} onClick={() => this.damMenu('Pokemon')} to="/All_Pokemon">All Pokemon</Nav.Link>
+                <Nav.Link as={Link} onClick={() => this.damMenu('Pokemon')} to="/Pokemon">Pokemon</Nav.Link>
+                <Nav.Link as={Link} onClick={() => this.damMenu('PokeBall')} to="/PokeBall">PokeBall</Nav.Link>
                 <Nav.Link as={Link} onClick={() => this.damMenu('About')} to="/About">About</Nav.Link>
               </Nav>
 
@@ -195,6 +199,8 @@ class App extends Component {
           <Route path="/" element={<Home />} />
           <Route path="/All_Pokemon" element={<All_Pokemon danhSachPokemon={danhSachPokemon} xuoiNguocCu={xuoiNguocCu} ThayDoiThuTu={this.ThayDoiThuTu} 
                     MauBangTable={MauBangTable} ChonSucManh={this.ChonSucManh} tenSucManh={tenSucManh} tenThuTu={tenThuTu} />} />
+          <Route path="/Pokemon" element={<Pokemon />} />
+          <Route path="/PokeBall" element={<PokeBall />} />
           <Route path="/About" element={<About />} />
         </Routes>
 

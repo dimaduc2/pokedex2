@@ -131,25 +131,25 @@ class All_Pokemon extends Component {
         {thayDoiGridTable==='Table' 
           ?
             <div className="d-flex justify-content-around">
-                <Container>
-                  <Row>
-                    {danhSachPokemon.length===0 
-                      ? 
-                      'Không tìm thấy Pokemon trong danh sách'
-                      :
-                      danhSachPokemon.map((moiPokemon, index)=>
-                        <Col>
-                          <Card style={{ width: '18rem' }}>
-                            {index}
-                            <Card.Img variant="top" src={moiPokemon.image} style={{width: '200px'}} onClick={() => this.hienAnhTo(index)} />
-                            <Card.Body><Card.Title>
-                              {moiPokemon.name}
-                            </Card.Title></Card.Body>
-                          </Card>
-                        </Col>
-                    )}
-                  </Row>
-                </Container>
+              <Container>
+                <Row>
+                  {danhSachPokemon.length===0 
+                    ? 
+                    'Không tìm thấy Pokemon trong danh sách'
+                    :
+                    danhSachPokemon.map((moiPokemon, index)=>
+                      <Col>
+                        <Card style={{ width: '18rem' }}>
+                          {index}
+                          <Card.Img variant="top" src={moiPokemon.image} style={{width: '200px'}} onClick={() => this.hienAnhTo(index)} />
+                          <Card.Body><Card.Title>
+                            {moiPokemon.name}
+                          </Card.Title></Card.Body>
+                        </Card>
+                      </Col>
+                  )}
+                </Row>
+              </Container>
             </div>
           :  
             <div>
