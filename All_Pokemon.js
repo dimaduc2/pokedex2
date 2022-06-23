@@ -1,59 +1,51 @@
 // import logo from './logo.svg';
 import './App.css';
-import React, { Component } from 'react'
-import { Navbar, Container, Nav, NavDropdown, Button, Table, Row, Col, Form, Card, Modal, Dropdown, DropdownButton, InputGroup, FormControl } from 'react-bootstrap';
-import { BsGridFill , BsJustify, BsCheckLg, BsFillCaretDownFill, BsFillCaretUpFill, BsFillArrowUpCircleFill, BsFillArrowDownCircleFill, BsZoomIn, 
-  BsFillMoonFill, BsFillSunFill } from 'react-icons/bs';
+import React, { Component,  } from 'react'
+import { Container, Button, Table, Row, Col, Card, Modal, Dropdown, OverlayTrigger, Tooltip, Spinner, Offcanvas, } from 'react-bootstrap';
+import { BsGridFill , BsJustify, BsCheckLg, BsFillCaretDownFill, BsFillCaretUpFill, BsFillArrowUpCircleFill, BsFillArrowDownCircleFill, BsFillInfoCircleFill} from 'react-icons/bs';
+import { BsHeartFill, BsHeart, BsCheck2 } from 'react-icons/bs';
 import Image from 'react-bootstrap/Image'
 import axios from 'axios';
 import PokeDexBD from './PokeDexBD.png'
+import { Link, } from "react-router-dom";
 
-
+var viTriDangXem = -1
 
 class All_Pokemon extends Component {
   state = {
-    danhSachPokemon:[0],
     thayDoiGridTable:'Grid',
     nutBamGrid: 'success',
     nutBamTable: '',
     lenTren: 'len1234',
     xuongDuoi: 'xuong5678',
     tenTim: '',
-
-    
+    coHienThanhSSKo: false, 
     moDongAnhTo: false,
     thongTinPokemon: {},
-
-
-
-
-    
   }
 
-  componentDidMount(){
-    axios.get('http://localhost:5400/pokemon?thuTu=number&type=all&xuoiNguoc=1')
-    .then(res => {
-      if(res.data==='Không kết nối với MongoDB'){
-        this.setState({coLoi: res.data});
-      }
-      else{
-        this.setState({danhSachPokemon: res.data});
-        console.log(res.data)
-      }
-    })
-  }
+  // componentDidMount(){
+  //   axios.get('http://localhost:5400/pokemon?xoaThongTin=number&type=all&xuoiNguoc=1')
+  //   .then(res => {
+  //     if(res.data==='Không kết nối với MongoDB'){
+  //       this.setState({coLoi: res.data});
+  //     }
+  //     else{
+  //       this.setState({danhSachPokemon: res.data});
+  //       console.log(res.data)
+  //     }
+  //   })
+  // }
 
   hienAnhTo = (index) => {
     this.setState({moDongAnhTo: true});
-    this.setState({thongTinPokemon: this.state.danhSachPokemon[index]
-    });
+    this.setState({thongTinPokemon: this.props.danhSachPokemon[index]});
+    viTriDangXem = index
   }
+
   dongAnhTo = () => {
     this.setState({moDongAnhTo: false});
   }
-
-
-  
 
   thayDoiTable = () => {
     this.setState({thayDoiGridTable: 'Table'})
@@ -66,23 +58,36 @@ class All_Pokemon extends Component {
     this.setState({nutBamTable: ''})
   }
 
+
+  hienThanhSoSanh = (thongTinPokemon) => {
+    this.setState({coHienThanhSSKo: true});
+    this.props.luuPokemonSoSanh(thongTinPokemon)
+  }
+  handleClose = () => {
+    this.setState({coHienThanhSSKo: false});
+  }
+
+
+  xoaVaDong = (idMuonXoa, viTriDangXem) => {
+    this.props.xoaThongTin(idMuonXoa, viTriDangXem)
+    this.dongAnhTo()
+    // this.setState({moDongAnhTo: false});
+  }  
+
+
   render() {
-    const {thayDoiGridTable, thongTinPokemon, moDongAnhTo, nutBamTable, nutBamGrid} = this.state
-    const {danhSachPokemon, xuoiNguocCu, MauBangTable, tenSucManh, tenThuTu} = this.props
+    const {thayDoiGridTable, thongTinPokemon, moDongAnhTo, nutBamTable, nutBamGrid, coHienThanhSSKo} = this.state
+    const {danhSachPokemon, xuoiNguocCu, MauBangTable, tenSucManh, tenThuTu, danhSachUaThich, danhSachSoSanh, } = this.props
     
     return (
       <div className="All_Pokemon">
-        
         <Modal 
           show={moDongAnhTo}
           onHide={this.dongAnhTo}
           centered
           >
           <Image src={thongTinPokemon.image} style={{width: '200px'}} ></Image>
-          <Modal.Header closeButton><Modal.Title>
-            
-          {thongTinPokemon.name}</Modal.Title></Modal.Header>
-
+          <Modal.Header closeButton><Modal.Title>{thongTinPokemon.name}</Modal.Title></Modal.Header>
           <Modal.Body>
             Number: {thongTinPokemon.number}
             <br/>
@@ -108,46 +113,96 @@ class All_Pokemon extends Component {
             <br/>
             Evo.to: {thongTinPokemon.evo_to}
           </Modal.Body>
-
+                    
           <Modal.Footer>
+            <Button variant="danger" style={{color:'black'}} onClick={() => this.xoaVaDong(thongTinPokemon._id, viTriDangXem)}>X</Button>
+
+            {danhSachSoSanh.some(moiPoke => moiPoke.name === thongTinPokemon.name)
+              ?<Button variant="light" style={{color:'blue'}} onClick={() => this.props.xoaPokemonSoSanhDungTen(thongTinPokemon.name)}><BsCheck2/>So sánh</Button>
+              :<Button variant="light" style={{color:'black'}} onClick={() => this.hienThanhSoSanh(thongTinPokemon)}>So sánh</Button>
+            }
+            
+            {danhSachUaThich.some(moiPoke => moiPoke.name === thongTinPokemon.name)
+              ?
+              // <Button variant="light" onClick={this.props.xoaPokemonUaThich}><BsHeartFill color='red' /></Button>
+              <Button variant="light" onClick={() => this.props.xoaPokemonUaThichDungTen(thongTinPokemon.name)}><BsHeartFill color='red' /></Button>
+              :<Button variant="light" onClick={() => this.props.luuPokemonUaThich(thongTinPokemon)}><BsHeart /></Button>
+            }
+
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 250, hide: 400 }}
+              overlay={<Tooltip id="button-tooltip">Xem kỹ thông tin</Tooltip>}
+            >
+              <Button variant="warning" onClick={() => this.props.chonPokemon(thongTinPokemon.name)}><Link to="/Pokemon"><BsFillInfoCircleFill /></Link></Button>
+            </OverlayTrigger>
             <Button variant="danger" href={'https://pokemondb.net/pokedex/'+thongTinPokemon.name} target="_blank"><Image src={PokeDexBD}/></Button>
-            <Button variant="secondary" onClick={this.dongAnhTo}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={this.dongAnhTo}>
-              Save Changes
-            </Button>
+            <Button variant="secondary" onClick={this.dongAnhTo}>Close</Button>
           </Modal.Footer>
         </Modal>
         
-        
-        <Button variant={nutBamTable} onClick={this.thayDoiTable} ><BsGridFill /></Button>
-        <Button variant={nutBamGrid} onClick={this.thayDoiGrid}><BsJustify /></Button>
+        <Offcanvas show={danhSachSoSanh.length>0 && coHienThanhSSKo} onHide={this.handleClose} placement={'bottom'} scroll={true} backdrop={false} style={{height: '250px'}}>
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title>
+              <Button variant="warning"  disabled={danhSachSoSanh.length<2} ><Link to="/So_Sanh">Xem So Sánh</Link></Button>
+              <br/>
+              {danhSachSoSanh.length>0
+                ?<a href='#' onClick={this.props.xoaTatCaPokemonSoSanh}>Xóa tất cả</a>
+                :null
+              }
+            </Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            {/* <Button variant="light" onClick={this.props.xoaTatCaPokemonSoSanh}>X</Button> */}
+            <Container>
+              <Row>
+                {danhSachSoSanh.map((moiPokemon, index)=>
+                  <Col>
+                    <Image src={moiPokemon.image} style={{width: '50px'}}/>
+                    <br/>
+                    {moiPokemon.name}
+                    <br/>
+                    <span onClick={() => this.props.xoaPokemonSoSanh(index)}>X</span>
+                  </Col>
+                )}
+              </Row>
+            </Container>
+          </Offcanvas.Body>
+        </Offcanvas>
+
+
+
+        <Button variant={nutBamTable} onClick={this.thayDoiTable} ><BsJustify /></Button>
+        <Button variant={nutBamGrid} onClick={this.thayDoiGrid}><BsGridFill /></Button>
         <Button onClick={this.len}><BsFillArrowUpCircleFill /></Button>
         <Button onClick={this.xuong}><BsFillArrowDownCircleFill /></Button>
         
         <br/>
         
-        {thayDoiGridTable==='Table' 
+        {thayDoiGridTable==='Grid' 
           ?
             <div className="d-flex justify-content-around">
               <Container>
                 <Row>
-                  {danhSachPokemon.length===0 
+                  {danhSachPokemon.length===1
                     ? 
-                    'Không tìm thấy Pokemon trong danh sách'
+                    <Col>
+                      <br/><br/>  
+                      <Spinner animation="border" />
+                      <br/><br/>
+                    </Col>
                     :
                     danhSachPokemon.map((moiPokemon, index)=>
                       <Col>
-                        <Card style={{ width: '18rem' }}>
-                          {index}
-                          <Card.Img variant="top" src={moiPokemon.image} style={{width: '200px'}} onClick={() => this.hienAnhTo(index)} />
+                        <Card style={{ width: '18rem' }} onClick={() => this.hienAnhTo(index)}>
+                          <Card.Img variant="top" src={moiPokemon.image} style={{width: '200px'}} />
                           <Card.Body><Card.Title>
                             {moiPokemon.name}
                           </Card.Title></Card.Body>
                         </Card>
                       </Col>
-                  )}
+                    )
+                  }
                 </Row>
               </Container>
             </div>
@@ -211,7 +266,7 @@ class All_Pokemon extends Component {
                     danhSachPokemon.map((moiPokemon, index)=>
                       <tr>
                         <td><Image src={moiPokemon.image} style={{width: '50px'}} ></Image></td>
-                        <td>{moiPokemon.name}</td>
+                        <td onClick={() => this.props.chonPokemon(moiPokemon.name)}><Link to="/Pokemon">{moiPokemon.name}</Link></td>
                         <td>{moiPokemon.number}</td>
                         <td>{moiPokemon.type}</td>
                         <td>{moiPokemon.hp}</td>
@@ -230,20 +285,10 @@ class All_Pokemon extends Component {
               </Table>
             </div>
         }
-        
         <br/>
       </div>
 
     )
   }
-
-
-
-
-
-
-
-
-
 }
 export default All_Pokemon;

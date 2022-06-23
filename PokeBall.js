@@ -1,6 +1,6 @@
 //Phần 1: các Import
 import React, { Component } from 'react'
-import { Table, Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Offcanvas } from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 import axios from 'axios';
 
@@ -29,21 +29,43 @@ componentDidMount(){
   })
 }
 
+
+handleClose = () => { 
+  this.setState({show: false});
+}
+handleShow = (nhanTen, nhanImage) => {
+  this.setState({show: true});
+  this.setState({thongTinPokeBallName: nhanTen});
+  this.setState({thongTinPokeBallImage: nhanImage});
+}
+
+
 //Phần 3: các Function
   
 
   render() {
-    const { danhSachPokeBall } = this.state
+    const { show, danhSachPokeBall, thongTinPokeBallName, thongTinPokeBallImage } = this.state
     return (
       <div className="PokeBall">
         <br/><br/>
+
+        <Offcanvas show={show} onHide={this.handleClose}>
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title>
+              {thongTinPokeBallName}
+            </Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <Image src={thongTinPokeBallImage} width={300} />
+          </Offcanvas.Body>
+        </Offcanvas>
 
         <Container>
           <Row>
             {danhSachPokeBall.map((moiPokeBall, index)=>
               <Col>
                 <Card style={{ width: '18rem' }}>
-                  <Card.Img variant="top" src={moiPokeBall.image} style={{width: '200px'}} />
+                  <Card.Img variant="top" src={moiPokeBall.image} style={{width: '200px'}} onClick={() => this.handleShow(moiPokeBall.name, moiPokeBall.image)} />
                   <Card.Body><Card.Title>
                     {moiPokeBall.name}
                   </Card.Title></Card.Body>
@@ -54,7 +76,6 @@ componentDidMount(){
         </Container>
 
         {/* <br/><br/><br/><br/><br/><br/>
-
         <Table striped bordered hover size="sm">
           <thead>
             <tr>
